@@ -1,0 +1,19 @@
+package utils;
+
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.equalTo;
+
+public class Utility {
+
+	public void checkResponse(String q, String appid, String URL) {
+		given()				
+		.param("q", q)
+		.param("appid", appid)
+		.get(URL)
+	.then()					
+		.log().all()
+		.statusCode(200)
+		.body("sys.country", equalTo("LT"));
+	}
+	
+}

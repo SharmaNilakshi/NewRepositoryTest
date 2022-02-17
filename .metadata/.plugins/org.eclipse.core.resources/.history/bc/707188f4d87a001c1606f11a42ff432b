@@ -1,0 +1,112 @@
+package Tests;
+
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.equalTo;
+import org.testng.ITestResult;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+import com.aventstack.extentreports.ExtentTest;
+import org.testng.Assert;
+import org.testng.annotations.Test;
+
+import com.aventstack.extentreports.ExtentTest;
+
+import utils.Utility;
+
+public class TestAPI_01 {
+	
+	Utility utils;
+	//private static ExtentTest etest;
+	
+	
+    tests = extent.createTest(result.getMethod().getRealClass().getSimpleName()+" >> "+result.getMethod().getMethodName());
+
+	
+	// Verify response body, status code and country
+	 @Test 
+	 void verifyResponse_Positive() 
+	 {
+		 
+		 given()
+			.get("https://api.openweathermap.org/data/2.5/weather?q=Liverpool&appid=2ae3931a57dd3c7fe10bde0c83fd2dbb")
+		.then()			
+			.log().all()
+			.statusCode(200)
+			.body("sys.country", equalTo("GB"));	 	  
+				 
+	 }
+	
+	
+	// Verify with different parameter value
+		@Test
+		void Test2()
+		{
+			given()				
+				.param("q", "Vilnius")
+				.param("appid", "2ae3931a57dd3c7fe10bde0c83fd2dbb")
+				.get("https://api.openweathermap.org/data/2.5/weather")
+			.then()					
+				.log().all();
+			    
+		}
+		
+		@Test
+		void Test3()
+		{
+			InputStream input;
+			try {
+				input = new FileInputStream("./././src/main/resources/data.prop");
+			
+
+	            Properties prop = new Properties();
+
+	            // load a properties file
+	            prop.load(input);
+
+	            // get the property value and print it out
+	            String q = prop.getProperty("q");
+	            String appid = prop.getProperty("appid");
+	            String URL = prop.getProperty("URL");
+	            
+	            utils = new Utility();
+	            
+	            utils.checkResponse(q, appid, URL);
+	            
+	            
+			}  catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 
+		}
+		
+	//Verify for incorrect appid
+		
+		@Test
+		void test4()
+		{
+			
+		given()
+			.param("appid", "2ae3931a57dd3c7fe10bde0c83fd2d")
+			.get("https://api.openweathermap.org/data/2.5/weather?q=London")
+		.then()
+			.statusCode(200);			
+			
+		}
+	
+	//Verify for incorrect URL
+	
+		@Test
+		void test5()
+		{
+			given()
+				.get("https://api.openweathermap.org/data/2.5/weather?t=Liverpool&appid=2ae3931a57dd3c7fe10bde0c83fd2dbb")
+			.then()
+				.statusCode(200);
+			
+		}
+	
+	
+}
